@@ -23,7 +23,7 @@ from direct.gui.DirectGui import *
 
 portNum = 8765
 
-exampleMsg = {"time": 'literally first lol', "usr": "MaybeBroken", "text": "first"}
+exampleMsg = {"time": "literally first lol", "usr": "MaybeBroken", "text": "first"}
 
 devMode = False
 anyAuth = True
@@ -68,6 +68,22 @@ def newRoom(msg):
     register_reset = True
 
 
+def newAccount(name, password):
+    global accounts
+    accounts[name] = password
+
+
+def delAccountAuth(name, password):
+    global accounts
+    if accounts[name] == password:
+        del accounts[name]
+
+
+def delAccountNoAuth(name):
+    global accounts
+    del accounts[name]
+
+
 def delRoom(roomName):
     global register_reset
     for room in chatRooms:
@@ -77,6 +93,7 @@ def delRoom(roomName):
 
 
 def controlLoop():
+    global anyAuth
     authMGR = False
     while True:
         _in = input()
@@ -96,15 +113,35 @@ def controlLoop():
                 _in = input("| ")
                 if _in == "help":
                     print(
-                        "| viewAccounts: show a list of all registered users\n| exit: exits the authMgr"
+                        "| listAccounts: show a list of all registered users\n| toggleAuth: toggles AUTH for clients\n| newAccount: makes an account with the specified name and password\n| delAccount: deletes an account\n| exit: exits the authMgr"
                     )
                 if _in == "exit":
                     print("| closing...\n^")
                     authMGR = False
-                if _in == "viewAccounts":
-                    print(f"{'='*20}\n|")
+                if _in == "listAccounts":
+                    print(f"|{'='*20}|")
                     for account in accounts:
                         print(f"| |-->{account}, {accounts[account]}")
+                    print(f"|{'='*20}|")
+                if _in == "newAccount":
+                    newAccount(
+                        input("| -> account name:"), input("| -> account password:")
+                    )
+                if _in == "delAccount":
+                    delAccountNoAuth(input("| -> name of user to delete: "))
+                if _in == "toggleAuth":
+                    if (
+                        input(
+                            "| WARNING: this can make it so users are unable to log in. are you sure?\n| enter anything to cancel, otherwise press enter: "
+                        )
+                        == ""
+                    ):
+                        if not anyAuth:
+                            anyAuth = True
+                            print("| -> AUTH: disabled")
+                        elif anyAuth:
+                            anyAuth = False
+                            print("| -> AUTH: enabled")
 
 
 async def _echo(websocket):
@@ -133,6 +170,7 @@ async def _echo(websocket):
                     await websocket.send("!!#internalErr")
         else:
             parseMessage(msg)
+            print(msg)
             await websocket.send(encoder.encode(o=chatRooms))
     except:
         ...
@@ -169,14 +207,8 @@ def saveServer():
 if not devMode:
     Thread(target=startLocaltunnel).start()
 with open("./backup.dat", "rt") as backup:
-    if len(backup.read())<3:
-        with open("./backup.dat", "wt") as backup2:
-            backup2.write(js.encoder.JSONEncoder().encode(o=chatRooms))
     chatRooms = js.decoder.JSONDecoder().decode(s=backup.read())
 with open("./accounts.dat", "rt") as backup:
-    if len(backup.read())<3:
-        with open("./accounts.dat", "wt") as backup2:
-            backup2.write(js.encoder.JSONEncoder().encode(o=accounts))
     accounts = js.decoder.JSONDecoder().decode(s=backup.read())
 Thread(target=saveServer).start()
 Thread(target=controlLoop).start()
