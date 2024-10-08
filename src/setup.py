@@ -1,6 +1,7 @@
 from setuptools import setup
 
 setup(
+    author='MaybeBroken',
     name="chatt",
     options={
         "build_apps": {
@@ -13,19 +14,9 @@ setup(
             "log_append": False,
             # "prefer_discrete_gpu": True,
             # Specify which files are included with the distribution
-            # "include_patterns": [
-            #     "**/*.png",
-            #     "**/*.jpg",
-            #     "**/*.egg",
-            #     "**/*.ttf",
-            #     "**/*.fbx",
-            #     "**/*.mp3",
-            #     "**/*.wav",
-            #     "**/*.prc",
-            #     "**/*.dat",
-            #     "**/*.dat1",
-            #     "userPref.txt",
-            # ],
+            "include_patterns": [
+                "**/*.prc",
+            ],
             # Include the OpenGL renderer and OpenAL audio plug-in
             "plugins": [
                 "pandagl",
