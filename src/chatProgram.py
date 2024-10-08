@@ -41,12 +41,11 @@ loadPrcFile("settings.prc")
 async def _send_recieve(data):
     async with websockets.connect(ip) as websocket:
         encoder = js.encoder.JSONEncoder()
+        global serverContents, usrName, usrNameMenu, passwdMenu, auth
         if data == "!!#update":
             await websocket.send("!!#update")
-            global serverContents
             serverContents = js.decoder.JSONDecoder().decode(s=await websocket.recv())
         elif data == "!!#login":
-            global usrName, usrNameMenu, passwdMenu, auth
             await websocket.send(f"+@\n{usrNameMenu}\n{passwdMenu}")
             retVal = await websocket.recv()
             if retVal == "!!#wrongPassword":
@@ -62,7 +61,18 @@ async def _send_recieve(data):
                 notify(f'AUTH disabled, using username "{usrNameMenu  + "-(!)"}"')
                 usrName = usrNameMenu + "-(!)"
                 auth = True
-
+        elif data == "!!#newAccount":
+            await websocket.send(f"=@\n{usrNameMenu}\n{passwdMenu}")
+            retVal = await websocket.recv()
+            if retVal == "!!#internalErr":
+                notify("server error\nplease try again")
+            elif retVal == "!!#authSuccess":
+                usrName = usrNameMenu
+                auth = True
+            elif retVal == "!!#authDisabled":
+                notify(f'AUTH disabled, using username "{usrNameMenu  + "-(!)"}"')
+                usrName = usrNameMenu + "-(!)"
+                auth = True
         else:
             await websocket.send(
                 encoder.encode(o={"usr": usrName, "text": data, "roomName": roomName})
@@ -176,6 +186,17 @@ class chatApp(ShowBase):
             command=runClient,
             extraArgs=["!!#login"],
         )
+
+        self.startButton = DirectButton(
+            parent=self.guiFrame,
+            text="new account",
+            color=(1, 1, 1, 1),
+            scale=0.17,
+            pos=(-0.1, 0, -0.26),
+            command=runClient,
+            extraArgs=["!!#newAccount"],
+        )
+
         self.taskMgr.add(self.checkAuthTask, "checkAuthState")
 
     def clearText(self):

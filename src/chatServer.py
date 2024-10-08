@@ -168,6 +168,18 @@ async def _echo(websocket):
                 except:
                     print(f"STUPID SERVER BROKE:\nmsg-->{msg}\naccounts-->{accounts}")
                     await websocket.send("!!#internalErr")
+        elif msg[0] == "=" and msg[1] == "@":
+            if anyAuth:
+                msg = msg.splitlines()
+                await websocket.send("!!#authDisabled")
+            else:
+                try:
+                    msg = msg.splitlines()
+                    newAccount(msg[1], msg[2])
+                    await websocket.send("!!#authSuccess")
+                except:
+                    print(f"STUPID SERVER BROKE:\nmsg-->{msg}\naccounts-->{accounts}")
+                    await websocket.send("!!#internalErr")
         else:
             parseMessage(msg)
             print(msg)
