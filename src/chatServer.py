@@ -23,21 +23,28 @@ from direct.gui.DirectGui import *
 
 portNum = 8765
 
-exampleMsg = {"time": 0, "usr": "MaybeBroken", "text": "test"}
+exampleMsg = {"time": 'literally first lol', "usr": "MaybeBroken", "text": "first"}
 
 devMode = False
 anyAuth = True
 register_reset = False
 chatRooms = [
-    {"roomName": "hangout", "messages": []},
-    {"roomName": "spam", "messages": []},
+    {"roomName": "hangout", "messages": [exampleMsg]},
+    {"roomName": "spam", "messages": [exampleMsg]},
 ]
+accounts = {"noAuth-(!!)": ""}
 
-accounts = {
-    "MaybeBroken": "123456",
-    "EthanG": "123456",
-    "noAuth-(!!)": "",
-}
+for resource in ["./accounts.dat", "./backup.dat"]:
+    try:
+
+        with open(resource, "x+t") as i:
+            if resource == "./backup.dat":
+                i.write(js.encoder.JSONEncoder().encode(o=chatRooms))
+            elif resource == "./accounts.dat":
+                i.write(js.encoder.JSONEncoder().encode(o=accounts))
+    except:
+        ...
+
 
 loadPrcFile("settings.prc")
 
@@ -138,21 +145,39 @@ async def _buildServe():
 
 
 def startLocaltunnel():
-    system(command=f"lt -p {portNum} -s maybebroken")
-    ...
+    while True:
+        try:
+            system(command=f"lt -p {portNum} -s maybebroken")
+        except:
+            t.sleep(2)
 
 
 def saveServer():
     while True:
-        with open("./backup.dat", "wt") as backup:
-            backup.write(js.encoder.JSONEncoder().encode(o=chatRooms))
+        for resource in ["./accounts.dat", "./backup.dat"]:
+            try:
+                with open(resource, "wt") as i:
+                    if resource == "./backup.dat":
+                        i.write(js.encoder.JSONEncoder().encode(o=chatRooms))
+                    elif resource == "./accounts.dat":
+                        i.write(js.encoder.JSONEncoder().encode(o=accounts))
+            except:
+                ...
         t.sleep(3)
 
 
 if not devMode:
     Thread(target=startLocaltunnel).start()
 with open("./backup.dat", "rt") as backup:
+    if len(backup.read())<3:
+        with open("./backup.dat", "wt") as backup2:
+            backup2.write(js.encoder.JSONEncoder().encode(o=chatRooms))
     chatRooms = js.decoder.JSONDecoder().decode(s=backup.read())
+with open("./accounts.dat", "rt") as backup:
+    if len(backup.read())<3:
+        with open("./accounts.dat", "wt") as backup2:
+            backup2.write(js.encoder.JSONEncoder().encode(o=accounts))
+    accounts = js.decoder.JSONDecoder().decode(s=backup.read())
 Thread(target=saveServer).start()
 Thread(target=controlLoop).start()
 Thread(target=asyncio.run, args=[_buildServe()]).start()
