@@ -24,5 +24,5 @@ setup(
             ],
             #"platforms": ["win_amd64", "darwin"],
         }
-    },
+    }
 )
