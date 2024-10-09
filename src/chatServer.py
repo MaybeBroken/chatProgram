@@ -64,7 +64,20 @@ def parseMessage(msg: str):
 
 def newRoom(msg):
     global register_reset
-    chatRooms.append({"roomName": msg, "messages": []})
+    for room in chatRooms:
+        try:
+            room[msg]
+            i=0
+            while True:
+                i+=1
+                try:
+                    room[f'{msg} {i}']
+                    chatRooms.append({f"roomName": f'{msg} {i}', "messages": [exampleMsg]})
+                    break
+                except:
+                    ...
+        except:
+            chatRooms.append({"roomName": msg, "messages": [exampleMsg]})
     register_reset = True
 
 
@@ -91,6 +104,10 @@ def delRoom(roomName):
             chatRooms.remove(room)
     register_reset = True
 
+def clearRoom(roomName):
+    for room in chatRooms:
+        if room["roomName"] == roomName:
+            room['messages']=[exampleMsg]
 
 def controlLoop():
     global anyAuth

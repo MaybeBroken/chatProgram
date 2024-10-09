@@ -275,10 +275,13 @@ class chatApp(ShowBase):
             messageText.hide()
             self.roomsList.append([name, [newRoomButton, messageText]])
             posIndex += 1
-        self.currentRoomFrame = self.roomsList[0][1]
-        self.currentRoomFrame[1].show()
-        global roomName
-        roomName = self.roomsList[0][0]
+        try:
+            self.currentRoomFrame = self.roomsList[0][1]
+            self.currentRoomFrame[1].show()
+            global roomName
+            roomName = self.roomsList[0][0]
+        except:
+            ...
         self.accept("wheel_up", self.moveTextUp)
         self.accept("wheel_down", self.moveTextDown)
         self.scrollAmount = 0
@@ -357,7 +360,7 @@ def notify(message: str, pos=(0.8, 0, -0.5), scale=0.75):
                 newMessage.setAlphaScale(val)
                 t.sleep(0.01)
             newMessage.destroy()
-             #newMessage.cleanup()
+            # newMessage.cleanup()
 
         Thread(target=_internalThread).start()
 
