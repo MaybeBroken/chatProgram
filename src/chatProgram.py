@@ -28,7 +28,10 @@ portNum = 8765
 if not devMode:
     ip = "wss://maybebroken.loca.lt"
 else:
-    ip = "ws://localhost:8765"
+    import socket
+    hostname = socket.gethostname()
+    IPAddr = socket.gethostbyname(hostname)
+    ip = f"ws://{IPAddr}:8765"
 usrName = None
 roomName = None
 usrNameMenu = None

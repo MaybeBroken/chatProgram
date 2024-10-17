@@ -206,7 +206,12 @@ async def _echo(websocket):
 
 
 async def _buildServe():
-    async with websockets.serve(_echo, "localhost", int(portNum)):
+    import socket
+    hostname = socket.gethostname()
+    IPAddr = socket.gethostbyname(hostname)
+
+    print(IPAddr)
+    async with websockets.serve(_echo, IPAddr, int(portNum)):
         print(f"*********\n:SERVER (notice): listening on port {portNum}\n*********")
         await asyncio.Future()
 
