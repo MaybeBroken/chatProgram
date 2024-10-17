@@ -21,6 +21,8 @@ from direct.showbase.ShowBase import ShowBase
 from direct.stdpy.threading import Thread
 from direct.gui.DirectGui import *
 
+import subprocess
+
 portNum = 8765
 
 exampleMsg = {"time": "literally first lol", "usr": "MaybeBroken", "text": "first"}
@@ -67,12 +69,14 @@ def newRoom(msg):
     for room in chatRooms:
         try:
             room[msg]
-            i=0
+            i = 0
             while True:
-                i+=1
+                i += 1
                 try:
-                    room[f'{msg} {i}']
-                    chatRooms.append({f"roomName": f'{msg} {i}', "messages": [exampleMsg]})
+                    room[f"{msg} {i}"]
+                    chatRooms.append(
+                        {f"roomName": f"{msg} {i}", "messages": [exampleMsg]}
+                    )
                     break
                 except:
                     ...
@@ -104,10 +108,12 @@ def delRoom(roomName):
             chatRooms.remove(room)
     register_reset = True
 
+
 def clearRoom(roomName):
     for room in chatRooms:
         if room["roomName"] == roomName:
-            room['messages']=[exampleMsg]
+            room["messages"] = [exampleMsg]
+
 
 def controlLoop():
     global anyAuth
@@ -217,11 +223,28 @@ async def _buildServe():
 
 
 def startLocaltunnel():
-    while True:
-        try:
-            system(command=f"lt -p {portNum} -s maybebroken")
-        except:
-            t.sleep(2)
+    script = f"""
+#!/bin/zsh
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+npx localtunnel -p {portNum} -s maybebroken
+"""
+
+    try:
+        with open("loca.zsh", "xw") as file:
+            None
+    except:
+        ...
+    with open("loca.zsh", "w") as file:
+        file.write(script)
+
+    subprocess.run(["chmod", "+x", "loca.zsh"])
+    result = subprocess.run(
+        ["./loca.zsh"], stdout=subprocess.PIPE, shell=True, text=True
+    )
+
+    print(result.stdout)
 
 
 def saveServer():
