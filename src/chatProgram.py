@@ -158,13 +158,27 @@ class chatApp(ShowBase):
         def setUsrName(usrN):
             global usrNameMenu
             usrNameMenu = usrN
+        
+        def setIp(ipt):
+            global ip
+            ip = f"ws://{ipt}:8765"
+        
+        self.ipBox = DirectEntry(
+            parent=self.guiFrame,
+            text="",
+            scale=0.1,
+            command=setIp,
+            initialText="IP",
+            numLines=1,
+            pos=(-1, 0, 0.5),
+        )
 
         self.usrNameBox = DirectEntry(
             parent=self.guiFrame,
             text="",
             scale=0.1,
             command=setUsrName,
-            initialText="",
+            initialText="USR",
             numLines=1,
             pos=(-1, 0, 0.25),
         )
@@ -174,7 +188,7 @@ class chatApp(ShowBase):
             text="",
             scale=0.1,
             command=setPassW,
-            initialText="",
+            initialText="PASS",
             numLines=1,
             obscured=1,
             pos=(-1, 0, 0.0),
