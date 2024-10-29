@@ -27,7 +27,7 @@ portNum = 8765
 
 exampleMsg = {"time": "literally first lol", "usr": "MaybeBroken", "text": "first"}
 
-devMode = False
+devMode = True
 anyAuth = True
 register_reset = False
 chatRooms = [
@@ -212,34 +212,39 @@ async def _echo(websocket):
 
 
 async def _buildServe():
-    async with websockets.serve(_echo, "localhost", int(portNum)):
-        print(f"*********\n:SERVER (notice): listening on port {portNum}\n*********")
+    import socket
+
+    hostname = socket.gethostname()
+    IPAddr = socket.gethostbyname(hostname)
+
+    async with websockets.serve(_echo, IPAddr, int(portNum)):
+        print(f"*********\n:SERVER (notice): listening on address {IPAddr}:{portNum}\n*********")
         await asyncio.Future()
 
 
-def startLocaltunnel():
-    script = f"""
-#!/bin/zsh
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-npx localtunnel -p {portNum} -s maybebroken
-"""
+# def startLocaltunnel():
+#     script = f"""
+# #!/bin/zsh
+# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# npx localtunnel -p {portNum} -s maybebroken
+# """
 
-    try:
-        with open("loca.zsh", "xw") as file:
-            None
-    except:
-        ...
-    with open("loca.zsh", "w") as file:
-        file.write(script)
+#     try:
+#         with open("loca.zsh", "xw") as file:
+#             None
+#     except:
+#         ...
+#     with open("loca.zsh", "w") as file:
+#         file.write(script)
 
-    subprocess.run(["chmod", "+x", "loca.zsh"])
-    result = subprocess.run(
-        ["./loca.zsh"], stdout=subprocess.PIPE, shell=True, text=True
-    )
+#     subprocess.run(["chmod", "+x", "loca.zsh"])
+#     result = subprocess.run(
+#         ["./loca.zsh"], stdout=subprocess.PIPE, shell=True, text=True
+#     )
 
-    print(result.stdout)
+#     print(result.stdout)
 
 
 def saveServer():
@@ -257,7 +262,8 @@ def saveServer():
 
 
 if not devMode:
-    Thread(target=startLocaltunnel).start()
+    # Thread(target=startLocaltunnel).start()
+    ...
 with open("./backup.dat", "rt") as backup:
     chatRooms = js.decoder.JSONDecoder().decode(s=backup.read())
 with open("./accounts.dat", "rt") as backup:
