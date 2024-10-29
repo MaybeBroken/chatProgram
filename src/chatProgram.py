@@ -21,17 +21,14 @@ from direct.showbase.ShowBase import ShowBase
 from direct.stdpy.threading import Thread
 from direct.gui.DirectGui import *
 
-devMode = False
-
 serverContents = []
 portNum = 8765
-if not devMode:
-    ip = "wss://maybebroken.loca.lt"
-else:
-    import socket
-    hostname = socket.gethostname()
-    IPAddr = socket.gethostbyname(hostname)
-    ip = f"ws://{IPAddr}:8765"
+
+import socket
+
+hostname = socket.gethostname()
+IPAddr = socket.gethostbyname(hostname)
+ip = f"wss://{IPAddr}"
 usrName = None
 roomName = None
 usrNameMenu = None
@@ -161,11 +158,11 @@ class chatApp(ShowBase):
         def setUsrName(usrN):
             global usrNameMenu
             usrNameMenu = usrN
-        
+
         def setIp(ipt):
             global ip
-            ip = f"ws://{ipt}:8765"
-        
+            ip = f"wss://{ipt}"
+
         self.ipBox = DirectEntry(
             parent=self.guiFrame,
             text="",
