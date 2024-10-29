@@ -111,19 +111,22 @@ class chatApp(ShowBase):
         self.setupMenuGui()
 
     def update(self, task):
-        global serverContents, roomName
-        for room in serverContents:
-            if room["roomName"] == roomName:
-                messages = ""
-                for message in room["messages"]:
-                    messages += f"| {message['time']} | {message['usr']}\n|  {message['text']}\n\n"
-                self.currentRoomFrame[1]["text"] = messages
-                self.currentRoomFrame[1].setPos(
-                    -0.5, 0.07 * len(messages.splitlines()) + self.scrollAmount
-                )
-        if len(serverContents) != self.len_last:
-            self.refreshGui()
-            self.len_last = len(serverContents)
+        try:
+            global serverContents, roomName
+            for room in serverContents:
+                if room["roomName"] == roomName:
+                    messages = ""
+                    for message in room["messages"]:
+                        messages += f"| {message['time']} | {message['usr']}\n|  {message['text']}\n\n"
+                    self.currentRoomFrame[1]["text"] = messages
+                    self.currentRoomFrame[1].setPos(
+                        -0.5, 0.07 * len(messages.splitlines()) + self.scrollAmount
+                    )
+            if len(serverContents) != self.len_last:
+                self.refreshGui()
+                self.len_last = len(serverContents)
+        except:
+            None
         return task.cont
 
     def moveTextUp(self):
