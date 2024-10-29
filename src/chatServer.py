@@ -27,7 +27,7 @@ portNum = 8765
 
 exampleMsg = {"time": "literally first lol", "usr": "MaybeBroken", "text": "first"}
 
-devMode = True
+devMode = False
 anyAuth = True
 register_reset = False
 chatRooms = [
@@ -218,7 +218,9 @@ async def _buildServe():
     IPAddr = socket.gethostbyname(hostname)
 
     async with websockets.serve(_echo, IPAddr, int(portNum)):
-        print(f"*********\n:SERVER (notice): listening on address {IPAddr}:{portNum}\n*********")
+        print(
+            f"*********\n:SERVER (notice): listening on address {IPAddr}:{portNum}\n*********"
+        )
         await asyncio.Future()
 
 
