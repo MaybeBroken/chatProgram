@@ -86,6 +86,7 @@ def runClient(data):
         global serverContents, auth
         if not auth:
             notify("network err")
+            asyncio.run(_send_recieve(data))
         else:
             serverContents = []
             for i in range(5):
@@ -161,7 +162,13 @@ class chatApp(ShowBase):
 
         def setIp(ipt):
             global ip
-            ip = f"wss://{ipt}"
+            if ipt == "ngrok":
+                ipt = "aware-snapper-plainly.ngrok-free.app"
+            elif ipt == "terminal":
+                ipt = input("\nIP to connect to: ")
+            elif ipt == "lt":
+                ipt = "maybebroken.loca.lt"
+            ip = f"ws://{ipt}"
 
         self.ipBox = DirectEntry(
             parent=self.guiFrame,
