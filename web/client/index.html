@@ -1,0 +1,77 @@
+<body>
+  <div style="height: 100vh; width: 100vw; display: flex; position: relative; flex-direction: row; justify-content: center;">
+    <div
+      style="
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        display: flex;
+        height: 100vh;
+        width: 180px;
+      "
+    >
+      <div>
+        <textarea
+          style="border-width: 1px; width: 180px; height: 30px"
+          id="IpAddr"
+        ></textarea>
+      </div>
+      <div>
+        <textarea
+          style="border-width: 1px; width: 180px; height: 30px"
+          id="EntryBox1"
+        >
+box1</textarea
+        >
+      </div>
+      <div>
+        <textarea
+          style="border-width: 1px; width: 180px; height: 30px"
+          id="EntryBox2"
+        >
+box2</textarea
+        >
+      </div>
+      <button id="connect" style="width: 180px; height: 30px">connect to server</button>
+    </div>
+  </div>
+</body>
+
+<script>
+  document.getElementById('IpAddr').value = document.baseURI
+    .toString()
+    .replace('http://', '')
+    .replace(':8100/', '')
+  cliMessages = {}
+  elements = ['EntryBox1', 'EntryBox2']
+  async function startWebsocket(uri) {
+    const socket = new WebSocket(`ws://${uri}`)
+    socket.onopen = () => socket.send('client')
+    socket.addEventListener('message', event => {
+      data = JSON.parse(event.data)
+      for (obj in data) {
+        block = data[obj]
+        for (item in block) {
+          if (document.getElementById(item) != null) {
+            document.getElementById(item).value = block[item]
+          }
+        }
+      }
+      setData()
+      socket.send(JSON.stringify(cliMessages))
+    })
+  }
+
+  function setData() {
+    for (elementId in elements) {
+      cliMessages[elements[elementId]] = document.getElementById(
+        elements[elementId]
+      ).value
+    }
+  }
+  document.getElementById('connect').addEventListener('click', function () {
+    startWebsocket(`${document.getElementById('IpAddr').value}:8765`)
+    document.getElementById('IpAddr').remove()
+    document.getElementById('connect').remove()
+  })
+</script>

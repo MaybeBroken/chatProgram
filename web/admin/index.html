@@ -1,0 +1,44 @@
+<body>
+  <div style="display: flex; justify-self: center">
+    <div>
+      <textarea
+        style="border-width: 1px; width: 180px; height: 30px"
+        id="IpAddr"
+      ></textarea>
+    </div>
+    <button id="connect">connect to server</button>
+  </div>
+</body>
+
+<script>
+  document.getElementById('IpAddr').value = document.baseURI
+    .toString()
+    .replace('http://', '')
+    .replace(':8200/', '')
+  async function startWebsocket(uri) {
+    socket = await new WebSocket(`ws://${uri}`)
+    socket.onopen = () => socket.send('admin')
+    socket.addEventListener('message', event => {
+      data = JSON.parse(event.data)
+      for (obj in data) {
+        block = data[obj]
+        for (item in block) {
+          if (document.getElementById(obj) != null) {
+            document.getElementById(obj).value = block[item]
+          } else {
+            const para = document.createElement('p')
+            para.id = obj
+            para.innerText = block[item]
+            document.body.appendChild(para)
+          }
+        }
+      }
+    })
+  }
+
+  document.getElementById('connect').addEventListener('click', function () {
+    startWebsocket(`${document.getElementById('IpAddr').value}:8765`)
+    document.getElementById('IpAddr').remove()
+    document.getElementById('connect').remove()
+  })
+</script>
