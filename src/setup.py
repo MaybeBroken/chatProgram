@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    author='MaybeBroken',
+    author="MaybeBroken",
     name="chatt",
     options={
         "build_apps": {
@@ -22,7 +22,7 @@ setup(
                 "pandagl",
                 "p3openal_audio",
             ],
-            #"platforms": ["win_amd64", "darwin"],
+            # "platforms": ["win_amd64", "darwin"],
         }
-    }
+    },
 )

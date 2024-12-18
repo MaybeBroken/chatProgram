@@ -17,7 +17,7 @@ serverQueue: dict[dict[str, None]] = {}
 messageQueue: list[dict[str, None]] = []
 hostname = socket.gethostname()
 # IPAddr = socket.gethostbyname(hostname)
-IPAddr = "10.0.42.144"
+IPAddr = "192.168.4.183"
 portNum = 8765
 send = lambda head, body: messageQueue.append({head: body})
 
@@ -67,27 +67,52 @@ class CLI:
         RESET = "\033[0m"
 
 
+def getServerQueue():
+    global serverQueue
+    return serverQueue
+
+
+def getMessageQueue():
+    global messageQueue
+    return messageQueue
+
+
+def setMessageQueue(queue):
+    global messageQueue
+    messageQueue = queue
+
+
 async def echo(websocket):
     remoteAddr = websocket.remote_address[0]
     clientType = await websocket.recv()
-    if clientType == "client":
-        while websocket.open:
+    global serverQueue, messageQueue
+    while True:
+        if clientType == "client":
             try:
-                global serverQueue, messageQueue
-                await websocket.send(json.JSONEncoder().encode(messageQueue))
+                await websocket.send(json.JSONEncoder().encode(getMessageQueue()))
                 messageQueue = []
                 cliReturn = await websocket.recv()
                 serverQueue[remoteAddr] = json.JSONDecoder().decode(cliReturn)
-                sleep(0.025)
+                sleep(0.25)
             except (
                 websockets.exceptions.ConnectionClosedOK
                 or websockets.exceptions.ConnectionClosedError
             ):
                 del serverQueue[remoteAddr]
-    elif clientType == "admin":
-        while websocket.open:
-            await websocket.send(json.JSONEncoder().encode(serverQueue))
-            sleep(0.025)
+            except:
+                print("error\n")
+        elif clientType == "admin":
+            try:
+                data = json.JSONEncoder().encode(getServerQueue())
+                await websocket.send(data)
+                sleep(0.25)
+            except (
+                websockets.exceptions.ConnectionClosedOK
+                or websockets.exceptions.ConnectionClosedError
+            ):
+                del serverQueue[remoteAddr]
+            except:
+                print("error\n")
 
 
 async def main(portNum):
@@ -133,9 +158,7 @@ if HTTPSERVER:
 def inputLoop():
     while True:
         message = input()
-        for element in ["EntryBox1", "EntryBox2"]:
-            ...
-        for client in serverQueue:
+        for client in getServerQueue():
             send("EntryBox2", message)
 
 
