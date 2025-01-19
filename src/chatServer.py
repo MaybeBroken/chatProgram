@@ -21,8 +21,6 @@ from direct.showbase.ShowBase import ShowBase
 from direct.stdpy.threading import Thread
 from direct.gui.DirectGui import *
 
-import subprocess
-
 portNum = 8765
 
 exampleMsg = {"time": "literally first lol", "usr": "MaybeBroken", "text": "first"}
