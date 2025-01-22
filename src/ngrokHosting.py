@@ -3,7 +3,7 @@ from time import sleep
 
 
 forward = ngrok.forward(
-    8765, authtoken="2hQokC8qEf1kJ4KV1j0pdTLwJA1_F5A9uFbRGuWfaq6xza1A"
+    8765, authtoken=input("authToken: ")
 )
 
 print(f"running server at URL {forward.url()}")
